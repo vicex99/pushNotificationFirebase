@@ -16,14 +16,16 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     val tag = "FirebaseMesage"
 
     /**
-     * cuando se instala por primera vez te manda este
+     * when the token was installed the first time
      */
     override fun onNewToken(token: String?) {
         Log.d(tag, "recive new: $token")
 
-//        sendRegistrationToServer(token);
     }
 
+    /**
+     * when the token was installed the following times
+     */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(tag, "recive old: ${remoteMessage.from}")
 
@@ -32,13 +34,29 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         }
     }
 
+    /**
+     * showNotification muestra en una notificacion emergente los datos que le pasan por parametro
+     *
+     * @title - title message
+     * @body - context text message
+     */
     private fun showNotification(title: String?, body: String?){
 
+        // create one transition in the app
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        // set the transition when the user click in the notfication
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
 
+        // get default notification sound
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        /*
+        create notification
+
+        use title, body, sound, intent
+         */
         val notificationBuilder = NotificationCompat.Builder(this)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
@@ -46,6 +64,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             .setSound(soundUri)
             .setContentIntent(pendingIntent)
 
+        // set when the notification is created
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(0, notificationBuilder.build())
     }
